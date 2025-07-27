@@ -5,8 +5,7 @@ and generating responses based on user queries.
 """
 import json
 from langchain_core.documents import Document
-from langchain_core.embeddings import Embeddings
-from langchain_core.vectorstores import VectorStore, InMemoryVectorStore
+from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders.text import TextLoader
 from langchain_ollama import OllamaEmbeddings, ChatOllama
@@ -17,23 +16,6 @@ load_dotenv()
 OLLAMA_MODEL_NAME = "gemma3"  # Ollama model for chat
 OLLAMA_EMBEDDING_MODEL_NAME = "all-minilm"  # Ollama model for embeddings
 CONTENT_FILE_PATH = "./context.txt"  # Path to the text file containing context
-
-def get_embedding_model() -> Embeddings:
-    """Initialize the Ollama embeddings model."""
-    return OllamaEmbeddings(model=OLLAMA_EMBEDDING_MODEL_NAME)
-
-def get_embedding_store(embeddings: Embeddings) -> VectorStore:
-    """Create an in-memory vector store using the provided embeddings model."""
-    return InMemoryVectorStore(embeddings)
-
-def get_chat_model() -> ChatOllama:
-    """Initialize the Ollama chat model."""
-    return ChatOllama(model=OLLAMA_MODEL_NAME)
-
-def load_documents(file_path: str):
-    """Load documents from a text file."""
-    loader = TextLoader(file_path)
-    return loader.load()
 
 def split_documents(documents: list[Document], chunk_size=200, chunk_overlap=20) -> list[Document]:
     """Split documents into smaller chunks for processing."""
@@ -60,11 +42,11 @@ def split_family_documents(documents: list[Document]) -> list[Document]:
 def main():
     """Main function to set up the local RAG system and process user queries."""
     # Create the embedding model and store
-    embedding_model = get_embedding_model()
-    embedding_store = get_embedding_store(embedding_model)
+    embedding_model = OllamaEmbeddings(model=OLLAMA_EMBEDDING_MODEL_NAME)
+    embedding_store = InMemoryVectorStore(embedding_model)
 
     # Load documents and split them into manageable chunks
-    context_docs = load_documents(CONTENT_FILE_PATH)
+    context_docs = TextLoader(CONTENT_FILE_PATH).load()
     chunks = split_documents(context_docs)
 
     # Add the document chunks to the embedding store
@@ -96,7 +78,7 @@ def main():
         """
 
     print("\n\nGenerating response...")
-    chat_model = get_chat_model()
+    chat_model = ChatOllama(model=OLLAMA_MODEL_NAME)
     response = chat_model.invoke(prompt)
 
     print("\n\nResponse:", response.content)
