@@ -57,8 +57,8 @@ def split_family_documents(documents: list[Document]) -> list[Document]:
 
     return result
 
-if __name__ == "__main__":
-
+def main():
+    """Main function to set up the local RAG system and process user queries."""
     # Create the embedding model and store
     embedding_model = get_embedding_model()
     embedding_store = get_embedding_store(embedding_model)
@@ -87,7 +87,7 @@ if __name__ == "__main__":
         print(10 * "-")
 
     # Generate a response using the chat model
-    PROMPT = f"""
+    prompt = f"""
         You are a helpful assistant. 
         
         Use the following context to answer the question: {relevant_docs_content}
@@ -97,6 +97,9 @@ if __name__ == "__main__":
 
     print("\n\nGenerating response...")
     chat_model = get_chat_model()
-    response = chat_model.invoke(PROMPT)
+    response = chat_model.invoke(prompt)
 
     print("\n\nResponse:", response.content)
+
+if __name__ == "__main__":
+    main()

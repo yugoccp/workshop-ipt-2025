@@ -1,6 +1,8 @@
 .venv/
 __pycache__/
+.DS_Store
 .env
+*.kuzu
 *.pyc
 *.pyo
 *.pyd

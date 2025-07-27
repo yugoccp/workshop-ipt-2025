@@ -1,6 +1,6 @@
 # Local RAG (Retrieval-Augmented Generation) Example
 
-This example demonstrates how to build a complete local RAG system using LangChain, Ollama, and an in-memory vector store. The system allows you to query information about family members using natural language.
+This example demonstrates how to build a complete local RAG system to query information about family members using natural language.
 
 ## Overview
 
@@ -10,59 +10,6 @@ RAG (Retrieval-Augmented Generation) combines information retrieval with text ge
 - **LangChain** for orchestrating the RAG pipeline
 - **In-memory vector store** for document storage and retrieval
 - **Family member data** as the knowledge base
-
-## Prerequisites
-
-### 1. Install Ollama
-
-First, install Ollama on your system:
-
-```bash
-# macOS
-brew install ollama
-
-# Linux
-curl -fsSL https://ollama.ai/install.sh | sh
-
-# Windows
-# Download from https://ollama.ai/download
-```
-
-### 2. Pull Required Models
-
-Pull the necessary models for embeddings and chat:
-
-- Note[1]: For embedding, I've used `all-minilm`, which with 384 dimensions and 46MB size.
-- Note[2]: For chat model, I've used `gemma3` with 4b parameters and 3.3GB size, which is good enough for starters.
-
-```bash
-# Pull the embedding model
-ollama pull all-minilm
-
-# Pull the chat model
-ollama pull gemma3
-```
-
-### 3. Install Python Dependencies
-
-Install the required Python packages:
-
-```bash
-python -m venv .venv
-
-# macOS or Linux
-source ./.venv/bin/activate
-
-# Windows
-./.venv/Scripts/Activate.ps1
-
-pip install -r requirements.txt
-```
-
-The requirements include:
-- `langchain-community`: Community integrations for LangChain
-- `langchain-ollama`: Ollama integration for LangChain
-- `python-dotenv`: Environment variable management
 
 ## Project Structure
 
@@ -216,13 +163,22 @@ Enter your query: Who works as a teacher?
 ## How It Works: The RAG Flow
 
 ### 1. **Indexing Phase** (Happens once at startup)
-```
-  JSON Data -> Document Loading -> Text Chunking -> Embedding Generation -> Vector Storage
+```mermaid
+  flowchart LR
+    A[JSON Data] --> B[Document Loading]
+    B --> C[Text Chunking]
+    C --> D[Embedding Generation]
+    D --> E[Vector Storage]
 ```
 
 ### 2. **Query Phase** (Happens for each user query)
-```
-  User Query -> Query Embedding -> Similarity Search -> Context Retrieval -> LLM Generation -> Response
+```mermaid
+  flowchart LR
+    F[User Query] --> G[Query Embedding]
+    G --> H[Similarity Search]
+    H --> I[Context Retrieval]
+    I --> J[LLM Generation]
+    J --> K[Response]
 ```
 
 ### Detailed Flow:
