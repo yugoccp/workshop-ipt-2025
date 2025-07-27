@@ -7,7 +7,7 @@ from langchain_core.output_parsers import JsonOutputParser
 load_dotenv()
 
 DATABASE_PATH = './database/database.kuzu'
-OLLAMA_MODEL_NAME = "gemma3"  # Ollama model for chat
+OLLAMA_MODEL_NAME = "llama3.2"  # Ollama model for chat
 GRAPH_SCHEMA = """
     CREATE NODE TABLE Person(name STRING, birth_date DATE, death_date DATE, bio STRING, PRIMARY KEY (name));
     CREATE NODE TABLE Occupation(name STRING, PRIMARY KEY (name));
@@ -63,9 +63,9 @@ def main():
         Generate cypher query based on graph database schema to support answer the user question.
         Return the query as a JSON object with the key "cypher".
 
-        <DB_SCHEMA>
+        <GRAPH_SCHEMA>
         {GRAPH_SCHEMA}
-        </DB_SCHEMA>
+        </GRAPH_SCHEMA>
 
         <USER_QUESTION>
         {query}

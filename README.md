@@ -23,7 +23,7 @@ curl -fsSL https://ollama.ai/install.sh | sh
 Pull the necessary models for embeddings and chat:
 
 - Note[1]: For embedding, I've used `all-minilm`, which with 384 dimensions and 46MB size.
-- Note[2]: For chat model, I've used `gemma3` with 4b parameters and 3.3GB size, which is good enough for starters.
+- Note[2]: For chat model, I've used `llama3.2` with 3b parameters and 2.0GB size, which is good enough for starters.
 
 ```bash
 # Pull the embedding model

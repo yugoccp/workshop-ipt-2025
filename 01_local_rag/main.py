@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-OLLAMA_MODEL_NAME = "gemma3"  # Ollama model for chat
+OLLAMA_MODEL_NAME = "llama3.2"  # Ollama model for chat
 OLLAMA_EMBEDDING_MODEL_NAME = "all-minilm"  # Ollama model for embeddings
 CONTENT_FILE_PATH = "./context.txt"  # Path to the text file containing context
 
@@ -26,7 +26,7 @@ def split_documents(documents: list[Document], chunk_size=200, chunk_overlap=20)
 
 def split_family_documents(documents: list[Document]) -> list[Document]:
     """Custom function for smarter split of family member documents."""
-    result = []
+    member_docs = []
     for family_doc in documents:
         json_data = json.loads(family_doc.page_content)
         family_members = json_data["family_members"]
@@ -35,9 +35,9 @@ def split_family_documents(documents: list[Document]) -> list[Document]:
                 page_content=json.dumps(member, ensure_ascii=False),
                 metadata={"source": family_doc.metadata.get("source", "unknown")}
             )
-            result.append(member_doc)
+            member_docs.append(member_doc)
 
-    return result
+    return member_docs
 
 def main():
     """Main function to set up the local RAG system and process user queries."""
@@ -60,7 +60,6 @@ def main():
     # Note: This step transforms the query into a vector to retrieve similar documents.
     print("\n\nRetrieving relevant documents...")
     relevant_docs = embedding_store.similarity_search(query, k=3)
-    print(f"Found {len(relevant_docs)} relevant documents.")
     
     print("\n\nRelevant documents content:")
     relevant_docs_content = [doc.page_content for doc in relevant_docs]
@@ -70,11 +69,15 @@ def main():
 
     # Generate a response using the chat model
     prompt = f"""
-        You are a helpful assistant. 
+        Answer user question based on the context provided. 
         
-        Use the following context to answer the question: {relevant_docs_content}
-        
-        Question: {query}
+        <CONTEXT>
+        {relevant_docs_content}
+        </CONTEXT>
+
+        <USER_QUESTION>
+        {query}
+        </USER_QUESTION>
         """
 
     print("\n\nGenerating response...")

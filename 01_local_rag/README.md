@@ -77,11 +77,11 @@ def get_embedding_store(embeddings: Embeddings) -> VectorStore:
 
 ### Step 4: Setting Up the Chat Model
 
-The example uses Ollama's `gemma3` model for generating responses:
+The example uses Ollama's `llama3.2` model for generating responses:
 
 ```python
 def get_chat_model() -> ChatOllama:
-    return ChatOllama(model="gemma3")
+    return ChatOllama(model="llama3.2")
 ```
 
 ### Step 5: Document Processing Pipeline
@@ -194,7 +194,7 @@ Enter your query: Who works as a teacher?
    - Query is converted to an embedding vector
    - System searches for the 5 most similar document chunks
    - Retrieved chunks are added to the LLM prompt as context
-   - `gemma3` model generates a response based on the context
+   - `llama3.2` model generates a response based on the context
 
 ## Customization Options
 
@@ -247,7 +247,7 @@ loader = PyPDFLoader("your_document.pdf")
 1. **Ollama models not found:**
    ```bash
    ollama pull all-minilm
-   ollama pull gemma3
+   ollama pull llama3.2
    ```
 
 2. **Ollama service not running:**
