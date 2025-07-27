@@ -39,6 +39,7 @@ def load_data(conn: kuzu.Connection):
     conn.execute('COPY School FROM "./dataset/schools.csv"')
     conn.execute('COPY HAS_PARENT FROM "./dataset/has_parents.csv"')
     conn.execute('COPY HAS_CHILDREN FROM "./dataset/has_children.csv"')
+    conn.execute('COPY HAS_SIBLING FROM "./dataset/has_siblings.csv"')
     conn.execute('COPY HAS_OCCUPATION FROM "./dataset/has_occupations.csv"')
     conn.execute('COPY HAS_HOBBY FROM "./dataset/has_hobby.csv"')
     conn.execute('COPY LIVES_IN FROM "./dataset/lives_in.csv"')
