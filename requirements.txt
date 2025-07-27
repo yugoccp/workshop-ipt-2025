@@ -1,5 +1,4 @@
 langchain-community
 langchain-ollama
 python-dotenv
-networkx
-spacy
+kuzu
