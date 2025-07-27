@@ -9,7 +9,7 @@ Graph RAG combines the power of graph databases with large language models. Inst
 This implementation uses:
 
 - **KùzuDB** for creating and querying the local graph database.
-- **Ollama** for local LLM inference (`gemma3` model).
+- **Ollama** for local LLM inference (`llama3.2` model).
 - **LangChain** for orchestrating the LLM interactions.
 - **Family member data** in CSV format as the knowledge base.
 
@@ -146,10 +146,10 @@ pip install -r requirements.txt
 
 ### Step 2: Start Ollama Service
 
-Ensure Ollama is running and has the `gemma3` model available.
+Ensure Ollama is running and has the `llama3.2` model available.
 ```bash
 ollama serve
-ollama pull gemma3
+ollama pull llama3.2
 ```
 
 ### Step 3: Execute the Graph RAG System
@@ -207,7 +207,7 @@ OLLAMA_MODEL_NAME = "llama3.2"  # Change to your desired model
 ## Troubleshooting
 
 - **Ollama service not running:** Ensure the `ollama serve` command is active in a separate terminal.
-- **Model not found:** Run `ollama pull gemma3` (or your chosen model) before executing the script.
+- **Model not found:** Run `ollama pull llama3.2` (or your chosen model) before executing the script.
 - **Database Errors:** If you modify the schema or CSV structure, delete the `./database` directory to allow the script to rebuild it from scratch.
 
 ## Security and Privacy

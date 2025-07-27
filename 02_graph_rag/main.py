@@ -41,8 +41,6 @@ GRAPH_DATA_LOAD = """
 
 def main():
     """Main function to set up the graph database and process user queries."""
-
-
     is_new_database = not os.path.exists(DATABASE_PATH)
     db = kuzu.Database(DATABASE_PATH)
     conn = kuzu.Connection(db)
@@ -55,8 +53,8 @@ def main():
         print("\nLoading Data from CSV...")
         conn.execute(GRAPH_DATA_LOAD)
 
-     # Get a query from the user
-    query = input("\nEnter your query: ")
+     # Get a message from the user
+    user_message = input("\nEnter your query: ")
 
     # Generate a response using the chat model
     prompt_cypher = f"""
@@ -68,7 +66,7 @@ def main():
         </GRAPH_SCHEMA>
 
         <USER_QUESTION>
-        {query}
+        {user_message}
         </USER_QUESTION>
         """
     
@@ -100,7 +98,7 @@ def main():
         </QUERY_RESULTS>
 
         <USER_QUESTION>
-        {query}
+        {user_message}
         </USER_QUESTION>
         """
     

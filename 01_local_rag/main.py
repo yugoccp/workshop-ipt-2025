@@ -53,13 +53,13 @@ def main():
     # Note: This step transform each chunk into a vector representation.
     embedding_store.add_documents(chunks)
 
-    # Get a query from the user
-    query = input("Enter your query: ")
+    # Get a message from the user
+    user_message = input("Enter your query: ")
 
-    # Retrieve relevant documents based on the query
-    # Note: This step transforms the query into a vector to retrieve similar documents.
+    # Retrieve relevant documents based on the message
+    # Note: This step transforms the message into a vector to retrieve similar documents.
     print("\n\nRetrieving relevant documents...")
-    relevant_docs = embedding_store.similarity_search(query, k=3)
+    relevant_docs = embedding_store.similarity_search(user_message, k=3)
     
     print("\n\nRelevant documents content:")
     relevant_docs_content = [doc.page_content for doc in relevant_docs]
@@ -76,7 +76,7 @@ def main():
         </CONTEXT>
 
         <USER_QUESTION>
-        {query}
+        {user_message}
         </USER_QUESTION>
         """
 
