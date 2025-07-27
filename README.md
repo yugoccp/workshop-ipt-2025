@@ -30,7 +30,7 @@ Pull the necessary models for embeddings and chat:
 ollama pull all-minilm
 
 # Pull the chat model
-ollama pull gemma3
+ollama pull llama3.2
 ```
 
 ## 3. Install Python Dependencies
