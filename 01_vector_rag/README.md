@@ -14,7 +14,7 @@ RAG (Retrieval-Augmented Generation) combines information retrieval with text ge
 ## Project Structure
 
 ```
-01_local_rag/
+01_vector_rag/
 ├── main.py          # Main RAG implementation
 ├── context.txt      # Your knowledge base (any text content)
 ├── README.md        # This documentation
@@ -145,7 +145,7 @@ ollama serve
 Run the main script:
 
 ```bash
-cd 01_local_rag
+cd 01_vector_rag
 python main.py
 ```
 
