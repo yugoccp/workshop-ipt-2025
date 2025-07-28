@@ -66,7 +66,7 @@ def main():
     user_message = input("\nEnter your query: ")
 
     @tool
-    def query_graph(cypher_query: str) -> list:
+    def query_graph_tool(cypher_query: str) -> list:
         """Execute a Cypher query on the graph database and return the results."""
         print("\nExecuting Cypher query...")
         print(cypher_query)
@@ -82,12 +82,12 @@ def main():
         return results
     
     chat_model = ChatOllama(model=OLLAMA_MODEL_NAME)
-    agent = create_react_agent(chat_model, [query_graph])
+    agent = create_react_agent(chat_model, [query_graph_tool])
     
     print("\nGenerating response...")
 
     messages = [
-        {"role": "system", "content": SYSTEM_MESSAGE.format(GRAPH_SCHEMA=GRAPH_SCHEMA)},
+        {"role": "system", "content": SYSTEM_MESSAGE},
         {"role": "user", "content": user_message}
     ]
 
