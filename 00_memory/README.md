@@ -14,8 +14,8 @@ This example showcases two scenarios:
 
 ```
 00_memory/
-├── no_memory.py     # Example of a stateless chat application
-├── with_memory.py   # Example of a stateful chat application with memory
+├── 01_no_memory.py     # Example of a stateless chat application
+├── 02_with_memory.py   # Example of a stateful chat application with memory
 ├── README.md        # This documentation
 ```
 
@@ -23,7 +23,7 @@ This example showcases two scenarios:
 
 In this example, the chatbot processes each query without any knowledge of previous interactions.
 
-### Implementation (`no_memory.py`)
+### Implementation (`01_no_memory.py`)
 
 The code sets up a simple loop where the user can input messages. The `ChatOllama` model is invoked with only the current user message.
 
@@ -72,7 +72,7 @@ The LLM has no memory of the first message, so it cannot answer the second quest
 
 To solve this, we can introduce a simple memory mechanism: storing the conversation history in a list and sending it with each new query.
 
-### Implementation (`with_memory.py`)
+### Implementation (`02_with_memory.py`)
 
 This version introduces a `chat_memory` list. With each turn, both the user's message and the model's response are appended to this list. The entire history is then sent to the model in the next turn.
 
@@ -146,13 +146,13 @@ You can run both scripts to see the difference in behavior.
 To run the stateless example:
 ```bash
 cd 00_memory
-python no_memory.py
+python 01_no_memory.py
 ```
 
 To run the stateful example:
 ```bash
 cd 00_memory
-python with_memory.py
+python 02_with_memory.py
 ```
 
 ## How It Works: The Memory Flow
