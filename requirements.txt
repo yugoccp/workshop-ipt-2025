@@ -1,4 +1,5 @@
 langchain-community
 langchain-ollama
+langgraph
 python-dotenv
 kuzu
