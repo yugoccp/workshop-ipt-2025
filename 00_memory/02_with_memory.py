@@ -16,17 +16,21 @@ def main():
     while user_message.strip():
 
         # Store the user message in memory
-        chat_memory.append(user_message)
+        chat_memory.append({"content": user_message, "type": "user"})
 
         # Generate a response using the chat model
-        print("\nGenerating response...")
+        print("\nGenerating response for messages...")
+        for msg in chat_memory:
+            print(f"[{msg['type']}] {msg['content']}")
+            print(10*"-")
+            
         chat_model = ChatOllama(model=OLLAMA_MODEL_NAME)
         response = chat_model.invoke(chat_memory)
         
         print("\nResponse:", response.content)
 
         # Store the response in memory
-        chat_memory.append(response.content)
+        chat_memory.append({"content": response.content, "type": "assistant"})
 
         # Get the next message from the user
         user_message = input("\nEnter your query (or press Enter to exit): ")
