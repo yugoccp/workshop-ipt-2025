@@ -1,93 +1,61 @@
-import os
+from pathlib import Path
 import kuzu
-from dotenv import load_dotenv
 from langchain_ollama import ChatOllama
 from langchain_core.tools import tool
 from langgraph.prebuilt import create_react_agent
 
-load_dotenv()
-
-DATABASE_PATH = './database/database.kuzu'
-OLLAMA_MODEL_NAME = "llama3.2"  # Ollama model for chat
-GRAPH_SCHEMA = """
-    CREATE NODE TABLE Person(name STRING, birth_date DATE, death_date DATE, bio STRING, PRIMARY KEY (name));
-    CREATE NODE TABLE Occupation(name STRING, PRIMARY KEY (name));
-    CREATE NODE TABLE Location(name STRING, PRIMARY KEY (name));
-    CREATE NODE TABLE Hobby(name STRING, PRIMARY KEY (name));
-    CREATE NODE TABLE School(name STRING, PRIMARY KEY (name));
-    CREATE REL TABLE HAS_PARENT(FROM Person TO Person);
-    CREATE REL TABLE HAS_CHILDREN(FROM Person TO Person);
-    CREATE REL TABLE HAS_SIBLING(FROM Person TO Person);
-    CREATE REL TABLE HAS_OCCUPATION(FROM Person TO Occupation);
-    CREATE REL TABLE HAS_HOBBY(FROM Person TO Hobby);
-    CREATE REL TABLE IS_MARRIED_TO(FROM Person TO Person);
-    CREATE REL TABLE LIVES_IN(FROM Person TO Location);
-    CREATE REL TABLE STUDIES_AT(FROM Person TO School);
-    """
-GRAPH_DATA_LOAD = """
-    COPY Person FROM "./dataset/people.csv";
-    COPY Occupation FROM "./dataset/occupations.csv";
-    COPY Location FROM "./dataset/locations.csv";
-    COPY Hobby FROM "./dataset/hobbies.csv";
-    COPY School FROM "./dataset/schools.csv";
-    COPY HAS_PARENT FROM "./dataset/has_parents.csv";
-    COPY HAS_CHILDREN FROM "./dataset/has_children.csv";
-    COPY HAS_SIBLING FROM "./dataset/has_siblings.csv";
-    COPY HAS_OCCUPATION FROM "./dataset/has_occupations.csv";
-    COPY HAS_HOBBY FROM "./dataset/has_hobby.csv";
-    COPY LIVES_IN FROM "./dataset/lives_in.csv";
-    COPY IS_MARRIED_TO FROM "./dataset/married_to.csv";
-    COPY STUDIES_AT FROM "./dataset/studies_at.csv";
-"""
-
-SYSTEM_MESSAGE = f"""
-    You are a helpful assistant that can answer questions based on a graph database.
-
-    <GRAPH_SCHEMA>
-    {GRAPH_SCHEMA}
-    </GRAPH_SCHEMA>
-"""
+GRAPHDB_PATH = Path(__file__).parent.parent / "graphdb"
+GRAPHDB_SCHEMA_PATH = GRAPHDB_PATH / "cypher/schema.cypher"
+GRAPHDB_DATABASE_PATH = GRAPHDB_PATH / "database/database.kuzu"
+OLLAMA_MODEL_NAME = "llama3.2"
 
 def main():
-    """Main function to set up the graph database and process user queries."""
-    is_new_database = not os.path.exists(DATABASE_PATH)
-    db = kuzu.Database(DATABASE_PATH)
-    conn = kuzu.Connection(db)
+    """Main function to set up the graph database and process user queries."""    
 
-    if is_new_database:
-        print("\nFirst time setting up Kuzu database...")
-        print("\nDefining Graph schema...")
-        conn.execute(GRAPH_SCHEMA)
-        
-        print("\nLoading Data from CSV...")
-        conn.execute(GRAPH_DATA_LOAD)
+    if not GRAPHDB_DATABASE_PATH.exists():
+        raise SystemError("Run script `graphdb/init_graphdb.sh` script before running this example.")
+   
+    graph_schema = GRAPHDB_SCHEMA_PATH.read_text()
+    system_message = f"""
+        You are a helpful assistant.
+        Answer user questions based ONLY on the graph database data.
+        Reply in a concise, natural and informative manner.
+        DON'T include query details or database schema on final response.
+
+        <GRAPH_SCHEMA>
+        {graph_schema}
+        </GRAPH_SCHEMA>
+    """
+    
+    db = kuzu.Database(GRAPHDB_DATABASE_PATH)
+    conn = kuzu.Connection(db)
 
     # Get a query from the user
     user_message = input("\nEnter your query: ")
 
     @tool
     def query_graph_tool(cypher_query: str) -> list:
-        """Execute a Cypher query on the graph database and return the results."""
-        print("\nExecuting Cypher query...")
-        print(cypher_query)
+        """Execute a Cypher query on the GRAPH_SCHEMA database and return the results.
 
-        cypher_query_result = conn.execute(cypher_query)
-        results = cypher_query_result.get_all()
+        Args:
+            cypher_query: a valid Cypher query string to execute on GRAPH_SCHEMA database
+        """
+        try:
+            cypher_query_result = conn.execute(cypher_query)
+            return cypher_query_result.get_all()
+        except RuntimeError as e:
+            return f"""
+                Failed to run given query. Review the GRAPH_SCHEMA and try again.
+                Error details: {e}
+            """
 
-        print("\nQuery Results:")
-        for row in results:
-            print(row)
-            print(10 * "-")
-
-        return results
-    
     chat_model = ChatOllama(model=OLLAMA_MODEL_NAME)
     agent = create_react_agent(chat_model, [query_graph_tool])
     
     print("\nGenerating response...")
 
     messages = [
-        {"role": "system", "content": SYSTEM_MESSAGE},
+        {"role": "system", "content": system_message},
         {"role": "user", "content": user_message}
     ]
 
