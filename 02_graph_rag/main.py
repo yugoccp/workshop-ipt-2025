@@ -59,7 +59,7 @@ def main():
     # Generate a response using the chat model
     prompt_cypher = f"""
         Generate cypher query based on graph database schema to support answer the user question.
-        Return the query as a JSON object with the key "cypher".
+        Return the query ONLY as a JSON object with the key "cypher".
 
         <GRAPH_SCHEMA>
         {GRAPH_SCHEMA}
