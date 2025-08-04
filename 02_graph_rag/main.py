@@ -1,12 +1,13 @@
 from pathlib import Path
 import kuzu
 from langchain_ollama import ChatOllama
-from langchain_core.output_parsers import JsonOutputParser
+import re
 
 GRAPHDB_PATH = Path(__file__).parent.parent / "graphdb"
 GRAPHDB_SCHEMA_PATH = GRAPHDB_PATH / "cypher/schema.cypher"
 GRAPHDB_DATABASE_PATH = GRAPHDB_PATH / "database/database.kuzu"
 OLLAMA_MODEL_NAME = "llama3.2"
+
 
 def main():
     """Main function to set up the graph database and process user queries."""
@@ -23,8 +24,9 @@ def main():
     # Generate a response using the chat model
     graph_schema = GRAPHDB_SCHEMA_PATH.read_text()
     prompt_cypher = f"""
-        Generate cypher query based on graph database schema to support answer the user question.
-        Return the query ONLY as a JSON object with the key "cypher".
+        You are an expert Neo4j developer. 
+        Your task is to generate a syntactically correct Cypher query based on the provided graph schema and user question.
+        Return ONLY the cypher query as response.
 
         <GRAPH_SCHEMA>
         {graph_schema}
@@ -41,10 +43,8 @@ def main():
     response = chat_model.invoke(prompt_cypher)
     print(response.content)
 
-    print("\nExtracting Cypher Query from Response...")
-    json_parser = JsonOutputParser()
-    json_response = json_parser.parse(text=response.content)
-    cypher_query = json_response["cypher"]
+    # Remove code block markers from the query for clean execution
+    cypher_query = re.sub(r"```(?:cypher)?\s*([\s\S]*?)\s*```", r"\1", response.content).strip()
     
     print("\nExecuting Cypher Query...")
     result = conn.execute(cypher_query)
@@ -56,8 +56,8 @@ def main():
     
     prompt_question = f"""
         You are a helpful assistant.
-        Answer user questions based ONLY on the graph database data.
-        Reply in a concise, natural and informative manner.
+        Answer user questions based ONLY on the QUERY_RESULTS.
+        Reply in a concise and natural manner.
         DON'T include query details or database schema on final response.
         
         <QUERY_RESULTS>
