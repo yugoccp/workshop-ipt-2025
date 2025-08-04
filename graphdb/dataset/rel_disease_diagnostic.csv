@@ -1,0 +1,11 @@
+disease_name,diagnostic_name
+Hypertension,Blood Pressure Measurement
+Asthma,Spirometry
+Asthma,Peak Flow Measurement
+Migraine,Neurological Exam
+Migraine,Patient History
+Major Depressive Disorder,Psychiatric Evaluation
+Major Depressive Disorder,PHQ-9 Questionnaire
+Pneumonia,Chest X-Ray
+Pneumonia,Sputum Test
+Pneumonia,Pulse Oximetry
