@@ -11,21 +11,16 @@ OLLAMA_MODEL_NAME = "llama3.2"
 
 @tool
 def query_graph_tool(cypher_query: str) -> list:
-    """Retrieve GRAPH_SCHEMA database data given a single syntactically correct Cypher query.
-
+    """
+    Retrieve GRAPH_SCHEMA database data given a single syntactically correct Cypher query.
     Args:
         cypher_query: a single syntactically correct Cypher query string to execute over GRAPH_SCHEMA database
     """
-    try:
-        db = kuzu.Database(GRAPHDB_DATABASE_PATH)
-        conn = kuzu.Connection(db)
-        cypher_query_result = conn.execute(cypher_query)
-        return cypher_query_result.get_all()
-    except RuntimeError as e:
-        return f"""
-            Failed to run given query. Review the GRAPH_SCHEMA and try again.
-            Error details: {e}
-        """
+    db = kuzu.Database(GRAPHDB_DATABASE_PATH)
+    conn = kuzu.Connection(db)
+    cypher_query_result = conn.execute(cypher_query)
+    return cypher_query_result.get_all()
+   
 
 def main():
     """Main function to set up the graph database and process user queries."""    
@@ -37,10 +32,10 @@ def main():
     graph_schema = GRAPHDB_SCHEMA_PATH.read_text()
     system_message = f"""
         You are an Graph Database expert with access to GRAPH_SCHEMA database.
-        Your task is to generate a syntactically correct Cypher query based on the provided GRAPH_SCHEMA to answer user question.
-        - STRICTLY use GRAPH_SCHEMA database data to answer user question.
-        - DON'T include query details or GRAPH_SCHEMA on final response.
-        - Reply in a concise and natural manner.
+        To answer questions, you should:
+        1. Break down the question into steps if needed
+        2. Generate appropriate Cypher queries using the query_graph_tool
+        3. Analyze the results and formulate a natural response  
 
         <GRAPH_SCHEMA>
         {graph_schema}
@@ -57,12 +52,12 @@ def main():
 
     print("\nGenerating response...")
 
-    messages = [
+    messages = {"messages": [
         {"role": "system", "content": system_message},
         {"role": "user", "content": user_message}
-    ]
+    ]}
 
-    for step in agent.stream({"messages": messages}, stream_mode="values"):
+    for step in agent.stream(messages, stream_mode="values"):
         step["messages"][-1].pretty_print()
 
 if __name__ == "__main__":
