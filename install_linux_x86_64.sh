@@ -13,15 +13,6 @@ else
     echo "Ollama is already installed."
 fi
 
-# Install Kuzu
-if ! command -v kuzu &> /dev/null; then
-    echo "Kuzu not found. Installing Kuzu..."
-    curl -L -O https://github.com/kuzudb/kuzu/releases/download/v0.11.1/kuzu_cli-linux-x86_64.tar.gz
-    tar xzf kuzu_cli-*.tar.gz
-else
-    echo "Kuzu is already installed."
-fi
-
 # Install Python dependencies
 echo "Setting up Python environment..."
 if [ ! -d ".venv" ]; then

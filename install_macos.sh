@@ -28,15 +28,6 @@ else
     echo "Ollama is already installed."
 fi
 
-# Install Kuzu
-echo "Installing Kuzu..."
-if ! command -v kuzu &> /dev/null; then
-    echo "Kuzu not found. Installing Kuzu..."
-    brew install kuzu
-else
-    echo "Kuzu is already installed."
-fi
-
 # Install Python dependencies
 echo "Setting up Python environment..."
 if [ ! -d ".venv" ]; then

@@ -25,14 +25,6 @@ if (-not (Get-Command ollama -ErrorAction SilentlyContinue)) {
     Write-Host "Ollama is already installed."
 }
 
-# Install Kuzu
-if (-not (Get-Command kuzu -ErrorAction SilentlyContinue)) {
-    Write-Host "Kuzu not found. Installing Kuzu..."
-    choco install kuzu
-} else {
-    Write-Host "Kuzu is already installed."
-}
-
 # Install Python dependencies
 Write-Host "Setting up Python environment..."
 if (-not (Test-Path -Path ".venv")) {
