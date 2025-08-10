@@ -55,9 +55,7 @@ Return ONLY the cypher query as response.
         print(10 * "-")
     
     prompt_question = f"""
-You are a helpful assistant.
 Answer USER_QUESTION based ONLY on the QUERY_RESULTS.
-If QUERY_RESULTS does not help answer USER_QUESTION, explain why and suggest improved question.
 Reply in a concise and natural manner.
 DON'T include query details or database schema on final response.
 

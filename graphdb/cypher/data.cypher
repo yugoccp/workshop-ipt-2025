@@ -6,7 +6,7 @@ COPY JOB FROM './dataset/node_jobs.csv';
 COPY LIVES_IN FROM './dataset/rel_lives_in.csv';
 COPY MARRIED_TO FROM './dataset/rel_married_to.csv';
 COPY STUDIES_AT FROM './dataset/rel_studies_at.csv';
-COPY PARENTS_OF FROM './dataset/rel_parents_of.csv';
+COPY PARENT_OF FROM './dataset/rel_parent_of.csv';
 COPY HAS_HOBBY FROM './dataset/rel_has_hobby.csv';
 COPY WORKS_AS FROM './dataset/rel_works_as.csv';
 COPY CHILD_OF FROM './dataset/rel_child_of.csv';
