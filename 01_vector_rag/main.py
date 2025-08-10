@@ -15,7 +15,7 @@ load_dotenv()
 
 OLLAMA_MODEL_NAME = "llama3.2"  # Ollama model for chat
 OLLAMA_EMBEDDING_MODEL_NAME = "all-minilm"  # Ollama model for embeddings
-CONTENT_FILE_PATH = "./context.txt"  # Path to the text file containing context
+CONTENT_FILE_PATH = "./context.json"  # Path to the file containing context
 
 def split_documents(documents: list[Document], chunk_size=200, chunk_overlap=20) -> list[Document]:
     """Split documents into smaller chunks for processing."""

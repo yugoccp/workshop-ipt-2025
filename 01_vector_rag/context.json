@@ -5,7 +5,7 @@
       "name": "John Doe",
       "birth_date": "1980-01-15",
       "death_date": null,
-      "bio": "Sample family member for testing the database setup.",
+      "bio": "Commited husband and father, works as a Software Engineer and want to become a bakery owner.",
       "relationships": {
         "spouse": "Jane Doe",
         "children": ["Alice Doe", "Bob Doe"],

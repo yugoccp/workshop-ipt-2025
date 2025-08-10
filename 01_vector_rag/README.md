@@ -16,7 +16,7 @@ RAG (Retrieval-Augmented Generation) combines information retrieval with text ge
 ```
 01_vector_rag/
 ├── main.py          # Main RAG implementation
-├── context.txt      # Your knowledge base (any text content)
+├── context.json      # Your knowledge base (any text content)
 ├── README.md        # This documentation
 ```
 
@@ -24,7 +24,7 @@ RAG (Retrieval-Augmented Generation) combines information retrieval with text ge
 
 ### Step 1: Understanding the Data Structure
 
-The `context.txt` file contains structured family member information:
+The `context.json` file contains structured family member information:
 
 ```json
 {
@@ -184,7 +184,7 @@ Enter your query: Who works as a teacher?
 ### Detailed Flow:
 
 1. **Document Processing:**
-   - Load `context.txt` as a text document
+   - Load `context.json` as a text document
    - Split into 200-character chunks with 20-character overlap
    - Generate embeddings for each chunk using `all-minilm`
    - Store embeddings in the in-memory vector store
@@ -229,7 +229,7 @@ chat_model = ChatOllama(model="llama3.2")
 ```
 
 ### Add Your Own Data
-Replace `context.txt` with your own structured data or use different file formats:
+Replace `context.json` with your own structured data or use different file formats:
 
 ```python
 # For text files
