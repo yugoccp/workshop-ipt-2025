@@ -1,68 +1,35 @@
-import os
+from pathlib import Path
 import kuzu
-from dotenv import load_dotenv
 from langchain_ollama import ChatOllama
-from langchain_core.output_parsers import JsonOutputParser
+import re
 
-load_dotenv()
+GRAPHDB_PATH = Path(__file__).parent.parent / "graphdb"
+GRAPHDB_SCHEMA_PATH = GRAPHDB_PATH / "cypher/schema.cypher"
+GRAPHDB_DATABASE_PATH = GRAPHDB_PATH / "database/database.kuzu"
+OLLAMA_MODEL_NAME = "llama3.2"
 
-DATABASE_PATH = './database/database.kuzu'
-OLLAMA_MODEL_NAME = "llama3.2"  # Ollama model for chat
-GRAPH_SCHEMA = """
-    CREATE NODE TABLE Person(name STRING, birth_date DATE, death_date DATE, bio STRING, PRIMARY KEY (name));
-    CREATE NODE TABLE Occupation(name STRING, PRIMARY KEY (name));
-    CREATE NODE TABLE Location(name STRING, PRIMARY KEY (name));
-    CREATE NODE TABLE Hobby(name STRING, PRIMARY KEY (name));
-    CREATE NODE TABLE School(name STRING, PRIMARY KEY (name));
-    CREATE REL TABLE HAS_PARENT(FROM Person TO Person);
-    CREATE REL TABLE HAS_CHILDREN(FROM Person TO Person);
-    CREATE REL TABLE HAS_SIBLING(FROM Person TO Person);
-    CREATE REL TABLE HAS_OCCUPATION(FROM Person TO Occupation);
-    CREATE REL TABLE HAS_HOBBY(FROM Person TO Hobby);
-    CREATE REL TABLE IS_MARRIED_TO(FROM Person TO Person);
-    CREATE REL TABLE LIVES_IN(FROM Person TO Location);
-    CREATE REL TABLE STUDIES_AT(FROM Person TO School);
-    """
-GRAPH_DATA_LOAD = """
-    COPY Person FROM "./dataset/people.csv";
-    COPY Occupation FROM "./dataset/occupations.csv";
-    COPY Location FROM "./dataset/locations.csv";
-    COPY Hobby FROM "./dataset/hobbies.csv";
-    COPY School FROM "./dataset/schools.csv";
-    COPY HAS_PARENT FROM "./dataset/has_parents.csv";
-    COPY HAS_CHILDREN FROM "./dataset/has_children.csv";
-    COPY HAS_SIBLING FROM "./dataset/has_siblings.csv";
-    COPY HAS_OCCUPATION FROM "./dataset/has_occupations.csv";
-    COPY HAS_HOBBY FROM "./dataset/has_hobby.csv";
-    COPY LIVES_IN FROM "./dataset/lives_in.csv";
-    COPY IS_MARRIED_TO FROM "./dataset/married_to.csv";
-    COPY STUDIES_AT FROM "./dataset/studies_at.csv";
-"""
 
 def main():
     """Main function to set up the graph database and process user queries."""
-    is_new_database = not os.path.exists(DATABASE_PATH)
-    db = kuzu.Database(DATABASE_PATH)
-    conn = kuzu.Connection(db)
 
-    if is_new_database:
-        print("\nFirst time setting up Kuzu database...")
-        print("\nDefining Graph schema...")
-        conn.execute(GRAPH_SCHEMA)
-        
-        print("\nLoading Data from CSV...")
-        conn.execute(GRAPH_DATA_LOAD)
+    if not GRAPHDB_DATABASE_PATH.exists():
+        raise SystemError("Run script `graphdb/init_graphdb.sh` script before running this example.")
+
+    db = kuzu.Database(GRAPHDB_DATABASE_PATH)
+    conn = kuzu.Connection(db)
 
      # Get a message from the user
     user_message = input("\nEnter your query: ")
 
     # Generate a response using the chat model
+    graph_schema = GRAPHDB_SCHEMA_PATH.read_text()
     prompt_cypher = f"""
-        Generate cypher query based on graph database schema to support answer the user question.
-        Return the query as a JSON object with the key "cypher".
+        You are an expert Neo4j developer. 
+        Your task is to generate a syntactically correct Cypher query based on the provided graph schema and user question.
+        Return ONLY the cypher query as response.
 
         <GRAPH_SCHEMA>
-        {GRAPH_SCHEMA}
+        {graph_schema}
         </GRAPH_SCHEMA>
 
         <USER_QUESTION>
@@ -76,10 +43,8 @@ def main():
     response = chat_model.invoke(prompt_cypher)
     print(response.content)
 
-    print("\nExtracting Cypher Query from Response...")
-    json_parser = JsonOutputParser()
-    json_response = json_parser.parse(text=response.content)
-    cypher_query = json_response["cypher"]
+    # Remove code block markers from the query for clean execution
+    cypher_query = re.sub(r"```(?:cypher)?\s*([\s\S]*?)\s*```", r"\1", response.content).strip()
     
     print("\nExecuting Cypher Query...")
     result = conn.execute(cypher_query)
@@ -90,7 +55,10 @@ def main():
         print(10 * "-")
     
     prompt_question = f"""
-        Based on the cypher query and it's result, answer the user's question:
+        You are a helpful assistant.
+        Answer user questions based ONLY on the QUERY_RESULTS.
+        Reply in a concise and natural manner.
+        DON'T include query details or database schema on final response.
         
         <QUERY_RESULTS>
         Query: {cypher_query}

@@ -19,60 +19,11 @@ This implementation uses:
 02_graph_rag/
 ├── main.py              # Main Graph RAG implementation
 ├── README.md            # This documentation
-├── run_graph_explorer.sh # Script to explore the graph (optional)
-├── database/            # Directory for the KùzuDB instance
-└── dataset/             # Directory containing the CSV data files
-    ├── people.csv
-    ├── occupations.csv
-    ├── locations.csv
-    ├── hobbies.csv
-    ├── schools.csv
-    ├── has_parents.csv
-    ├── has_children.csv
-    ├── has_occupations.csv
-    ├── has_hobby.csv
-    ├── lives_in.csv
-    ├── married_to.csv
-    └── studies_at.csv
 ```
 
 ## Step-by-Step Implementation Guide
 
-### Step 1: Defining the Graph Schema
-
-The foundation of the system is a graph schema that defines the nodes (entities) and relationships (edges).
-
-```python
-GRAPH_SCHEMA = """
-    CREATE NODE TABLE Person(name STRING, birth_date DATE, death_date DATE, bio STRING, PRIMARY KEY (name));
-    CREATE NODE TABLE Occupation(name STRING, PRIMARY KEY (name));
-    CREATE NODE TABLE Location(name STRING, PRIMARY KEY (name));
-    CREATE NODE TABLE Hobby(name STRING, PRIMARY KEY (name));
-    CREATE NODE TABLE School(name STRING, PRIMARY KEY (name));
-    CREATE REL TABLE HAS_PARENT(FROM Person TO Person);
-    CREATE REL TABLE HAS_CHILDREN(FROM Person TO Person);
-    CREATE REL TABLE HAS_SIBLING(FROM Person TO Person);
-    CREATE REL TABLE HAS_OCCUPATION(FROM Person TO Occupation);
-    CREATE REL TABLE HAS_HOBBY(FROM Person TO Hobby);
-    CREATE REL TABLE IS_MARRIED_TO(FROM Person TO Person);
-    CREATE REL TABLE LIVES_IN(FROM Person TO Location);
-    CREATE REL TABLE STUDIES_AT(FROM Person TO School);
-"""
-```
-
-### Step 2: Loading Data from CSV
-
-Data is loaded into the graph database from CSV files using Kùzu's `COPY` command. Each CSV corresponds to a node or relationship table in the schema.
-
-```python
-def load_data(conn: kuzu.Connection):
-    """Load the data using the COPY command"""
-    conn.execute('COPY Person FROM "./dataset/people.csv"')
-    conn.execute('COPY Occupation FROM "./dataset/occupations.csv"')
-    # ... and so on for all other CSV files
-```
-
-### Step 3: Generating a Cypher Query from Natural Language
+### Step 1: Generating a Cypher Query from Natural Language
 
 When a user asks a question, the system first converts it into a Cypher query. The LLM is prompted with the graph schema and the user's question to generate the appropriate query.
 
@@ -93,7 +44,7 @@ chat_model = get_chat_model()
 response = chat_model.invoke(cypher_prompt)
 ```
 
-### Step 4: Executing the Cypher Query
+### Step 2: Executing the Cypher Query
 
 The generated Cypher query is executed against the Kùzu database to retrieve the relevant information.
 
@@ -105,7 +56,7 @@ result = conn.execute(cypher_query)
 cypher_results = result.get_all()
 ```
 
-### Step 5: Generating the Final Response
+### Step 3: Generating the Final Response
 
 The results from the graph query are passed back to the LLM as context. The LLM then synthesizes this structured information into a natural language answer for the user.
 
@@ -149,7 +100,7 @@ pip install -r requirements.txt
 Ensure Ollama is running and has the `llama3.2` model available.
 ```bash
 ollama serve
-ollama pull llama3.2
+ollama run llama3.2
 ```
 
 ### Step 3: Execute the Graph RAG System
