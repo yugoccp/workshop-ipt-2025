@@ -453,3 +453,44 @@ LIMIT 3;
 │ Peter Jones│ 20th Century Born │
 └────────────┴───────────────────┘
 ```
+
+## Built-in functions
+
+Kuzu provides a set of built-in functions to facilitate querying the graph.
+
+### `label` function
+
+The `label` function returns the label of a node.
+
+```cypher
+MATCH (a)
+RETURN label(a), count(a)
+```
+
+```
+┌──────────┬──────────┐
+│ label(a) │ count(a) │
+│ STRING   │ INT64    │
+├──────────┼──────────┤
+│ PERSON   │ 10       │
+│ LOCATION │ 5        │
+│ SCHOOL   │ 3        │
+│ HOBBY    │ 5        │
+│ JOB      │ 4        │
+└──────────┴──────────┘
+```
+
+### Other utility functions
+
+Other utility functions are available to inspect nodes and relationships.
+
+| Function      | Description                                   |
+|---------------|-----------------------------------------------|
+| `id(n)`       | returns the id of a node or relationship `n`  |
+| `offset(n)`   | returns the offset of a node `n`              |
+| `properties(n)`| returns the properties of a node or relationship `n`|
+| `type(r)`     | returns the type of a relationship `r`        |
+| `src(r)`      | returns the source node of a relationship `r` |
+| `dst(r)`      | returns the destination node of a relationship `r`|
+| `startNode(r)`| returns the source node of a relationship `r` |
+| `endNode(r)`  | returns the destination node of a relationship `r`|
