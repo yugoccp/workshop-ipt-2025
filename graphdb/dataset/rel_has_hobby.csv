@@ -1,6 +1,7 @@
-Alice Doe,reading
-Alice Doe,mathematics
-Alice Doe,piano
-Bob Doe,soccer
-Bob Doe,video games
-Bob Doe,drawing
+person_id,hobby_id
+3,1
+3,2
+3,3
+4,4
+4,5
+4,6

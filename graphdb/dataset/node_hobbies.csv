@@ -1,7 +1,7 @@
-name:ID(Hobby)
-reading
-mathematics
-piano
-soccer
-video games
-drawing
+hobby_id,name
+1,reading
+2,mathematics
+3,piano
+4,soccer
+5,video games
+6,drawing

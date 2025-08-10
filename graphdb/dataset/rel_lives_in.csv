@@ -1,2 +1,3 @@
-John Doe,San Francisco CA
-Jane Doe,San Francisco CA
+person_id,location_id
+1,1
+2,1
