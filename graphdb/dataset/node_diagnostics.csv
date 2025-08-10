@@ -1,0 +1,11 @@
+diagnostic_name,type
+Blood Pressure Measurement,Physical Exam
+Spirometry,Pulmonary Function Test
+Peak Flow Measurement,Monitoring
+Neurological Exam,Physical Exam
+Patient History,Clinical Assessment
+Psychiatric Evaluation,Clinical Assessment
+PHQ-9 Questionnaire,Screening Tool
+Chest X-Ray,Imaging
+Sputum Test,Lab Test
+Pulse Oximetry,Monitoring

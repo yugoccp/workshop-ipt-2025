@@ -1,0 +1,20 @@
+disease_name,symptom_name,prevalence
+Hypertension,Headache,Occasional
+Hypertension,Dizziness,Occasional
+Hypertension,High Blood Pressure Reading,Common
+Asthma,Wheezing,Common
+Asthma,Shortness of Breath,Common
+Asthma,Chest Tightness,Common
+Asthma,Cough,Common
+Migraine,Severe Headache,Common
+Migraine,Nausea,Common
+Migraine,Sensitivity to Light,Common
+Migraine,Aura,Occasional
+Major Depressive Disorder,Persistent Sadness,Common
+Major Depressive Disorder,Loss of Interest or Pleasure,Common
+Major Depressive Disorder,Fatigue,Common
+Major Depressive Disorder,Changes in Sleep,Common
+Pneumonia,Cough with Phlegm,Common
+Pneumonia,Fever,Common
+Pneumonia,Chills,Common
+Pneumonia,Shortness of Breath,Common
