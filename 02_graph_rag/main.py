@@ -24,17 +24,17 @@ def main():
     # Generate a response using the chat model
     graph_schema = GRAPHDB_SCHEMA_PATH.read_text()
     prompt_cypher = f"""
-        You are an expert Neo4j developer. 
-        Your task is to generate a syntactically correct Cypher query based on the provided graph schema and user question.
-        Return ONLY the cypher query as response.
+You are an expert Neo4j developer. 
+Your task is to generate a syntactically correct Cypher query based on the provided graph schema and user question.
+Return ONLY the cypher query as response.
 
-        <GRAPH_SCHEMA>
-        {graph_schema}
-        </GRAPH_SCHEMA>
+<GRAPH_SCHEMA>
+{graph_schema}
+</GRAPH_SCHEMA>
 
-        <USER_QUESTION>
-        {user_message}
-        </USER_QUESTION>
+<USER_QUESTION>
+{user_message}
+</USER_QUESTION>
         """
     
     chat_model = ChatOllama(model=OLLAMA_MODEL_NAME)
@@ -55,21 +55,25 @@ def main():
         print(10 * "-")
     
     prompt_question = f"""
-        You are a helpful assistant.
-        Answer user questions based ONLY on the QUERY_RESULTS.
-        Reply in a concise and natural manner.
-        DON'T include query details or database schema on final response.
-        
-        <QUERY_RESULTS>
-        Query: {cypher_query}
-        Result: {cypher_results}
-        </QUERY_RESULTS>
+You are a helpful assistant.
+Answer USER_QUESTION based ONLY on the QUERY_RESULTS.
+If QUERY_RESULTS does not help answer USER_QUESTION, explain why and suggest improved question.
+Reply in a concise and natural manner.
+DON'T include query details or database schema on final response.
 
-        <USER_QUESTION>
-        {user_message}
-        </USER_QUESTION>
-        """
+<QUERY_RESULTS>
+Query: {cypher_query}
+Result: {cypher_results}
+</QUERY_RESULTS>
+
+<USER_QUESTION>
+{user_message}
+</USER_QUESTION>
+"""
     
+    print("\nFinal prompt...")
+    print(prompt_question)
+
     print("\nGenerating response...")
     response = chat_model.invoke(prompt_question)
 
