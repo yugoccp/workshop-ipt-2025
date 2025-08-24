@@ -10,7 +10,7 @@ GRAPHDB_DATABASE_PATH = GRAPHDB_PATH / "database/database.kuzu"
 OLLAMA_MODEL_NAME = "llama3.2"
 
 @tool
-def query_graph_tool(cypher_query: str) -> list:
+def run_cypher_query(cypher_query: str) -> list:
     """
     Retrieve data given a single valid Cypher query.
     Args:
@@ -20,6 +20,18 @@ def query_graph_tool(cypher_query: str) -> list:
     conn = kuzu.Connection(db)
     cypher_query_result = conn.execute(cypher_query)
     return cypher_query_result.get_all()
+
+
+@tool
+def get_member_names() -> list:
+    """
+    Retrieve all available persons names in graph data
+    """
+    db = kuzu.Database(GRAPHDB_DATABASE_PATH)
+    conn = kuzu.Connection(db)
+    cypher_query_result = conn.execute("MATCH (a:Person) RETURN a.name;")
+    return cypher_query_result.get_all()
+
 
 def main():
     """Main function to set up the graph database and process user queries."""    
@@ -32,10 +44,11 @@ def main():
     system_message = f"""
 You are an Graph Database expert with access to GRAPH_SCHEMA database.
 
-Follow the steps below to answer user question:
-1. Break down the question into steps if needed;
-2. Generate Cypher queries STRICTLY based on GRAPH_SCHEMA to fetch required data;
-3. Generate final response STRICTLY based on the retrieved data in a concise and natural manner.
+Always validate person name when mentioned.
+Make queries to build context based ONLY on GRAPH_SCHEMA.
+Generate final response ONLY based on built context.
+Write the final response in a plain natural language.
+Think step by step.
 
 <GRAPH_SCHEMA>
 {graph_schema}
@@ -43,8 +56,7 @@ Follow the steps below to answer user question:
 """
 
     chat_model = ChatOllama(model=OLLAMA_MODEL_NAME)
-    chat_model = chat_model.bind_tools([query_graph_tool])
-    agent = create_react_agent(chat_model, [query_graph_tool])
+    agent = create_react_agent(chat_model, [run_cypher_query, get_member_names])
 
     # Get a query from the user
     user_message = input("\nEnter your query: ")
